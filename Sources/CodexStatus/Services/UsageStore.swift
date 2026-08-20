@@ -6,6 +6,8 @@ final class UsageStore: ObservableObject {
     @Published private(set) var snapshot: UsageSnapshot?
     @Published private(set) var connectionState: ConnectionState = .loading
     @Published private(set) var isRefreshing = false
+    @Published private(set) var isResetting = false
+    @Published var resetResultMessage: String?
 
     private let provider: any UsageProvider
     private let refreshInterval: Duration
@@ -56,6 +58,33 @@ final class UsageStore: ObservableObject {
             connectionState = .connected
         } catch {
             connectionState = state(for: error)
+        }
+    }
+
+    var canResetUsageLimit: Bool {
+        (snapshot?.resetCreditsAvailable ?? 0) > 0 && !isRefreshing && !isResetting
+    }
+
+    func resetUsageLimit() async {
+        guard canResetUsageLimit else { return }
+        isResetting = true
+        defer { isResetting = false }
+
+        do {
+            let outcome = try await provider.resetUsageLimit()
+            switch outcome {
+            case .reset:
+                resetResultMessage = "사용한도를 초기화했습니다."
+            case .nothingToReset:
+                resetResultMessage = "현재 초기화할 수 있는 사용한도가 없습니다."
+            case .noCredit:
+                resetResultMessage = "사용 가능한 초기화 크레딧이 없습니다."
+            case .alreadyRedeemed:
+                resetResultMessage = "이미 사용된 초기화 요청입니다."
+            }
+            await refresh()
+        } catch {
+            resetResultMessage = "사용한도를 초기화하지 못했습니다: \(error.localizedDescription)"
         }
     }
 

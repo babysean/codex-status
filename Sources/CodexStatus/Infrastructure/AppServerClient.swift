@@ -139,6 +139,16 @@ actor AppServerClient {
         return try await request(method: "account/usage/read", params: EmptyParams())
     }
 
+    func consumeRateLimitResetCredit() async throws -> UsageLimitResetOutcome {
+        try await connectIfNeeded()
+        let params = ConsumeRateLimitResetCreditParams(idempotencyKey: UUID().uuidString)
+        let result: ConsumeRateLimitResetCreditResult = try await request(
+            method: "account/rateLimitResetCredit/consume",
+            params: params
+        )
+        return result.outcome
+    }
+
     func shutdown() {
         initialized = false
         activeProcessID = nil

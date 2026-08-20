@@ -3,16 +3,19 @@ import Foundation
 struct RateLimitsReadResult: Decodable, Sendable {
     let rateLimits: RateLimitsPayload?
     let rateLimitsByLimitID: [String: RateLimitsPayload]
+    let rateLimitResetCredits: RateLimitResetCreditsPayload?
 
     enum CodingKeys: String, CodingKey {
         case rateLimits
         case rateLimitsByLimitID = "rateLimitsByLimitId"
+        case rateLimitResetCredits
     }
 
     init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         rateLimits = values.decodeSafely(RateLimitsPayload.self, forKey: .rateLimits)
         rateLimitsByLimitID = values.decodeSafely([String: RateLimitsPayload].self, forKey: .rateLimitsByLimitID) ?? [:]
+        rateLimitResetCredits = values.decodeSafely(RateLimitResetCreditsPayload.self, forKey: .rateLimitResetCredits)
     }
 
     /// Stable ordering keeps UI updates from reshuffling rows. The legacy object
@@ -37,6 +40,23 @@ struct RateLimitsReadResult: Decodable, Sendable {
         }
         return entries
     }
+}
+
+struct RateLimitResetCreditsPayload: Decodable, Sendable {
+    let availableCount: Int
+
+    init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: DynamicCodingKey.self)
+        availableCount = max(values.decodeInt(forKey: DynamicCodingKey("availableCount")) ?? 0, 0)
+    }
+}
+
+struct ConsumeRateLimitResetCreditParams: Encodable, Sendable {
+    let idempotencyKey: String
+}
+
+struct ConsumeRateLimitResetCreditResult: Decodable, Sendable {
+    let outcome: UsageLimitResetOutcome
 }
 
 struct RateLimitsEntry: Sendable {

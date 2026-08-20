@@ -15,6 +15,7 @@ swift build -c release --product CodexStatus
 rm -rf "$app_dir"
 mkdir -p "$macos_dir" "$resources_dir"
 cp "$build_dir/CodexStatus" "$macos_dir/CodexStatus"
+cp "$project_dir/Assets/AppIcon.icns" "$resources_dir/AppIcon.icns"
 
 cat > "$contents_dir/Info.plist" <<'PLIST'
 <?xml version="1.0" encoding="UTF-8"?>
@@ -29,6 +30,8 @@ cat > "$contents_dir/Info.plist" <<'PLIST'
     <string>com.local.codex-status</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
     <key>CFBundleName</key>
     <string>Codex Status</string>
     <key>CFBundlePackageType</key>

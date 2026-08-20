@@ -3,6 +3,7 @@ import Foundation
 struct UsageSnapshot: Sendable, Equatable {
     let windows: [UsageWindow]
     let credits: CreditStatus?
+    let resetCreditsAvailable: Int
     let planName: String?
     let tokenSummary: TokenSummary?
     let fetchedAt: Date
@@ -55,6 +56,13 @@ struct CreditStatus: Sendable, Equatable {
     let hasCredits: Bool
     let isUnlimited: Bool
     let balance: Double?
+}
+
+enum UsageLimitResetOutcome: String, Codable, Sendable, Equatable {
+    case reset
+    case nothingToReset
+    case noCredit
+    case alreadyRedeemed
 }
 
 struct TokenSummary: Sendable, Equatable {

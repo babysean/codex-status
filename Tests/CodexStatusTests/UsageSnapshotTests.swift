@@ -9,6 +9,7 @@ final class UsageSnapshotTests: XCTestCase {
         let snapshot = UsageSnapshot(
             windows: [primary, reached],
             credits: nil,
+            resetCreditsAvailable: 0,
             planName: nil,
             tokenSummary: nil,
             fetchedAt: .now
@@ -47,6 +48,21 @@ final class UsageSnapshotTests: XCTestCase {
         XCTAssertEqual(snapshot.credits?.hasCredits, true)
         XCTAssertEqual(snapshot.credits?.balance, 12.75)
         XCTAssertEqual(snapshot.planName, "pro")
+    }
+
+    func testMapperExposesAvailableResetCreditCount() throws {
+        let data = try XCTUnwrap(
+            """
+            {
+              "rateLimits": { "limitId": "account", "primary": { "usedPercent": 42 } },
+              "rateLimitResetCredits": { "availableCount": 2 }
+            }
+            """.data(using: .utf8)
+        )
+        let limits = try JSONDecoder().decode(RateLimitsReadResult.self, from: data)
+        let snapshot = UsageSnapshotMapper.snapshot(limits: limits, usage: nil, fetchedAt: .now)
+
+        XCTAssertEqual(snapshot.resetCreditsAvailable, 2)
     }
 
     func testMapperFlattensAllDictionaryBucketsInStableOrderWithoutDuplicateLimit() throws {

@@ -91,10 +91,9 @@ enum PresentationFormatters {
     }
 
     static func resetDate(_ date: Date) -> String {
-        date.formatted(date: .abbreviated, time: .shortened)
-    }
-
-    static func relativeDate(_ date: Date) -> String {
-        date.formatted(.relative(presentation: .named))
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.dateFormat = "yyyy년 MM월 dd일 HH시 mm분 ss초"
+        return formatter.string(from: date)
     }
 }

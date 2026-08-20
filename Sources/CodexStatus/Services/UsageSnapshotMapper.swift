@@ -30,6 +30,7 @@ enum UsageSnapshotMapper {
         return UsageSnapshot(
             windows: windows,
             credits: credits,
+            resetCreditsAvailable: result.rateLimitResetCredits?.availableCount ?? 0,
             planName: result.rateLimits?.planType ?? entries.compactMap(\.payload.planType).first ?? representative?.planType,
             tokenSummary: tokenSummary,
             fetchedAt: fetchedAt

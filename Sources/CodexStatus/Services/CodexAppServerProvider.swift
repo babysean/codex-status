@@ -20,4 +20,8 @@ actor CodexAppServerProvider: UsageProvider {
     func shutdown() async {
         await client.shutdown()
     }
+
+    func resetUsageLimit() async throws -> UsageLimitResetOutcome {
+        try await client.consumeRateLimitResetCredit()
+    }
 }

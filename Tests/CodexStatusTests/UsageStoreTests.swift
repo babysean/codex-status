@@ -32,6 +32,7 @@ final class UsageStoreTests: XCTestCase {
         UsageSnapshot(
             windows: [UsageWindow(id: "main", name: "Main", usedPercent: 10)],
             credits: nil,
+            resetCreditsAvailable: 0,
             planName: nil,
             tokenSummary: nil,
             fetchedAt: Date(timeIntervalSince1970: 100)

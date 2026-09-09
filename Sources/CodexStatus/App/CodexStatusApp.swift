@@ -3,26 +3,26 @@ import SwiftUI
 
 @main
 struct CodexStatusApp: App {
-    @StateObject private var usageStore: UsageStore
-
-    init() {
-        let store = UsageStore()
-        _usageStore = StateObject(wrappedValue: store)
-
-        Task { @MainActor in
-            store.start()
-        }
-    }
+    @NSApplicationDelegateAdaptor(CodexStatusAppDelegate.self) private var appDelegate
 
     var body: some Scene {
-        MenuBarExtra {
-            UsagePopover(store: usageStore)
-        } label: {
-            MenuBarLabel(
-                snapshot: usageStore.snapshot,
-                connectionState: usageStore.connectionState
-            )
+        Settings {
+            EmptyView()
         }
-        .menuBarExtraStyle(.window)
+    }
+}
+
+@MainActor
+final class CodexStatusAppDelegate: NSObject, NSApplicationDelegate {
+    private let usageStore = UsageStore()
+    private var menuBarController: MenuBarController?
+
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        menuBarController = MenuBarController(store: usageStore)
+        usageStore.start()
+    }
+
+    func applicationWillTerminate(_ notification: Notification) {
+        usageStore.stop()
     }
 }

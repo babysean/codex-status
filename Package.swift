@@ -12,7 +12,10 @@ let package = Package(
     targets: [
         .executableTarget(
             name: "CodexStatus",
-            path: "Sources/CodexStatus"
+            path: "Sources/CodexStatus",
+            resources: [
+                .process("Resources")
+            ]
         ),
         .testTarget(
             name: "CodexStatusTests",

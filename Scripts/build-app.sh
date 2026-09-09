@@ -15,6 +15,7 @@ swift build -c release --product CodexStatus
 rm -rf "$app_dir"
 mkdir -p "$macos_dir" "$resources_dir"
 cp "$build_dir/CodexStatus" "$macos_dir/CodexStatus"
+cp -R "$build_dir/CodexStatus_CodexStatus.bundle" "$resources_dir/"
 cp "$project_dir/Assets/AppIcon.icns" "$resources_dir/AppIcon.icns"
 
 cat > "$contents_dir/Info.plist" <<'PLIST'
